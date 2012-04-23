@@ -1,0 +1,9 @@
+name = Add Fullajax
+description = Add FullAjax library to Drupal
+
+configure = admin/config/development/addfullajax
+
+dependencies[] = "libraries"
+
+version = "7.x-0.1"
+core = "7.x"

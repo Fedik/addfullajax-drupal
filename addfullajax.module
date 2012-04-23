@@ -1,0 +1,495 @@
+<?php
+/**
+ * @file
+ * addfullajax
+ * Add FullAjax javascript library to Drupal 7
+ * @since 2011.05.19
+ * @version 2012.04.23
+ *
+ */
+
+/**
+ * Define default configuration
+ * @version 2012.04.23
+ */
+$_addfullajax_def_conf_base = "
+/* fullAjaxId - it you content id */
+var filterUrl = ['/admin/','/logout','node/add','/edit'];
+var filterQuery = ['q=admin','q=user/logout'];
+FLAX.Filter.add({url:'/', id:fullAjaxId});
+FLAX.Filter.add({url:filterUrl, query:filterQuery, type:'nowrap'});
+FLAX.directLink();
+FLAX.linkEqual[':ax:'+fullAjaxId+':'] = '!';
+FLAX.linkEqual['[~q~]'] = '?';
+FLAX.Filter.on('beforewrap', function(ops){
+var regExt = /.+\.(jpg|jpeg|gif|png|mp3|mp4|ogg|ogv|webm|pdf|txt|odf|ods)$/i;
+if (regExt.test(ops.el.href) || ops.el.nodeName == 'FORM' || ops.el.href.indexOf('/edit') != -1 || ops.el.href.indexOf('/add') != -1){return false;}
+});
+FLAX.Html.onall('unload', function(o){
+  /* here can insert code for execut before content unloaded */
+  Drupal.detachBehaviors('#'+fullAjaxId);
+});
+FLAX.Html.onall('load', function(o){
+  /* here can insert code for execut after content loaded */
+  Drupal.attachBehaviors('#'+fullAjaxId);
+});
+";
+$_addfullajax_def_conf_anim = "
+FLAX.Effect.add({id:fullAjaxId, start: function(id, request){
+ var mId = jQuery('#'+fullAjaxId), mIdWidth = mId.width(), mIdHeight = mId.height();
+ if (!jQuery('#fullAjaxGif').length){
+  jQuery('<img/>',{
+   'id':'fullAjaxGif',
+   'src':'sites/all/modules/addfullajax/images/ajax-loader.gif',
+   'alt':'Loading...',
+   'style':'position:absolute;border:none;padding:0;margin-left:'+ mIdWidth*0.5 +'px;top:'+ mIdHeight*0.3 +'px;'
+  }).insertBefore(mId);
+ };
+ mId.fadeOut(300,request());
+},
+end: function(id){
+ if (jQuery('#fullAjaxGif').length){jQuery('#fullAjaxGif').remove();};
+ jQuery('#'+fullAjaxId).fadeIn(300);
+}
+});
+";
+
+
+/**
+ * Implements hook_help().
+ * @version 2012.04.23
+ */
+function addfullajax_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#addfullajax':
+      return t('Help For FullAjax module.') . 'Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>';
+  }
+}
+/**
+ * Implements hook_permission().
+ * @version 2011.05.19
+ */
+function addfullajax_permission() {
+  return array(
+    'administer addfullajax'  =>  array(
+      'title'  =>  t('Administer the module'),
+      'description'  =>  t('Perform maintenance tasks for the Add FullAjax module.'),
+    ),
+  );
+}
+/**
+ * Implements hook_menu().
+ * @version 2011.05.19
+  */
+function addfullajax_menu() {
+  $items = array();
+
+  $items['admin/config/development/addfullajax'] = array(
+    'title'  =>  'Add FullAjax',
+    'description'  =>  'Configuration for Add FullAjax module',
+    'page callback'  =>  'drupal_get_form',
+    'page arguments'  =>  array('addfullajax_admin_form'),
+    'access arguments'  =>  array('administer addfullajax'),
+    'type'  =>  MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Form function, called by drupal_get_form()
+ * @version 2011.08.25
+ * TODO More power themes configuration
+ */
+function addfullajax_admin_form($form, &$form_state) {
+  global $_addfullajax_def_conf_base;
+  global $_addfullajax_def_conf_anim;
+
+  $form['addfullajax_cssid'] = array(
+    '#type'  =>  'textfield',
+    '#title'  =>  t('CSS id for content block'),
+    '#default_value'  =>  variable_get('addfullajax_cssid', 'forajax'),
+    '#size'  =>  12,
+    '#maxlength'  =>  255,
+    '#description'  =>  t('CSS id for content block where shown article'),
+    '#required'  =>  TRUE,
+  );
+  $form['addfullajax_cnfg_checkmenuit'] = array(
+    '#type'  =>  'checkbox',
+    '#title'  =>  t('Auto check active menu item'),
+    '#description'  =>  t('Enable auto check the active menu item'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_checkmenuit', 1),
+  );
+  $form['addfullajax_cnfg_usr_cache'] = array(
+    '#type'   =>  'checkbox',
+    '#title'  =>  t('User-side Cache'),
+    '#description'  =>  t('Enable Cache on user-side'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_usr_cache', 1),
+  );
+  $form['addfullajax_cnfg_useGA'] = array(
+    '#type'   =>  'checkbox',
+    '#title'  =>  t('I use Google Analytics'),
+    '#description'  =>  t('Check if you use Google Analytics'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_useGA', 0),
+  );
+  $form['addfullajax_cnfg_data'] = array(
+    '#type'  =>  'textarea',
+    '#title'  =>  t('FullAjax configuration'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_data', $_addfullajax_def_conf_base),
+    '#cols'  =>  10,
+    '#rows'  =>  12,
+    '#description'  =>  t('JavaScript code for FullAjax configuration'),
+    '#required'  =>  TRUE,
+  );
+  $form['addfullajax_cnfg_animation'] = array(
+    '#type'  =>  'textarea',
+    '#title'  =>  t('Code for AJAX animation'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_animation', $_addfullajax_def_conf_anim),
+    '#cols'  =>  10,
+    '#rows'  =>  12,
+    '#description'  =>  t('JavaScript code for AJAX animation'),
+    '#required'  =>  FALSE,
+  );
+
+  $form['addfullajax_cnfg_themes'] = array(
+    '#type'  =>  'fieldset',
+    '#title'  =>  t('Templates config'),
+    '#collapsible'  =>  FALSE,
+    '#collapsed'  =>  FALSE,
+    'addfullajax_cnfg_themes_cur_theme'  =>  array(
+      '#type'  =>  'fieldset',
+      '#title'  =>  t('Disable theme regions'),
+      '#collapsible'  =>  TRUE,
+      '#collapsed'  =>  TRUE,
+  ),
+  );
+  $themes = list_themes();
+  $active_themes = array();
+  foreach ($themes as $name => $them) {
+    if ($them->status) {
+      $active_themes[$name] = $name;
+      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_cur_theme']['addfullajax_cnfg_themes_' . $name . '_regions'] = array(
+          '#type'   =>  'checkboxes',
+          '#title'  =>  t('For @theme', array('@theme' => $name)),
+          '#description'  =>  t('Disable theme regions, this regions will not be rendered for FullAjax answer.'),
+          '#options'  =>  $themes[$name]->info['regions'],
+          '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_regions', array()),
+      );
+    }
+  }
+ $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_themes'] = array(
+   '#type'  =>  'fieldset',
+   '#title'  =>  t('Disable for template'),
+   '#collapsible'  =>  TRUE,
+   '#collapsed'  =>  TRUE,
+   'addfullajax_cnfg_themes_disabled'  =>  array(
+     '#type'   =>  'checkboxes',
+     '#title'  =>  t('Disable for themes'),
+     '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
+     '#options'  =>  $active_themes,
+     '#default_value'  =>  variable_get('addfullajax_cnfg_themes_disabled', array('seven')),
+   ),
+  );
+
+  $form['addfullajax_cnfg_debug'] = array(
+    '#type'  =>  'checkboxes',
+    '#title'  =>  t('For Debug'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_debug', array()),
+    '#options'  =>  array(
+//    'uncompresed'  =>  t('Use uncompressed lib'),
+      'debug_ajax'  => t('Debug Ajax request'),
+      'debug_script'  => t('Debug script loading'),
+      'debug_link'  =>  t('Debug link loading'),
+      'debug_style'  =>  t('Debug style loading'),
+    ),
+    '#description'  =>  t('Use for debug'),
+    '#prefix'  =>  '<hr />',
+  );
+
+  return system_settings_form($form);
+}
+/**
+ * Implements hook_init().
+ * @version 2012.04.23
+ */
+function addfullajax_init() {
+
+  variable_set('addfullajax_need_ajax_response', 0);
+
+  //check whether we allow use fullajax sripts
+  if (!_addfullajax_is_allow()) {
+    return ;
+  }
+
+  if ((isset($_SERVER['HTTP_AJAX_ENGINE']) && $_SERVER['HTTP_AJAX_ENGINE'] == 'Fullajax')
+    || (isset($_REQUEST['ax']) && $_REQUEST['ax'] == 'ok' )
+  ) {
+    variable_set('addfullajax_need_ajax_response', 1);
+    return ;
+  }
+
+  _addfullajax_add_config_js();
+
+}
+
+/**
+ * check whether we allow use fullajax sripts
+ * @return boolean
+ */
+function _addfullajax_is_allow() {
+  //check whether allow for templates
+  global $theme_key;
+  $themes_disabled = variable_get('addfullajax_cnfg_themes_disabled', array('seven'));
+
+  if (!empty($themes_disabled[$theme_key])) {
+    return FALSE;
+  }
+
+  if (arg(0) == 'admin' or arg(1) == 'add' or arg(2) == 'edit'
+    or stristr(request_path(), 'media/browser')) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+/**
+ * Add JS Configuration for FullAjax
+ * @version 2012.04.23
+ */
+function _addfullajax_add_config_js() {
+  global $_addfullajax_def_conf_base;
+  global $_addfullajax_def_conf_anim;
+
+  $dbg = variable_get('addfullajax_cnfg_debug');
+
+  //Add base JS
+  $lib_path = libraries_get_path('fullajax');
+  drupal_add_js($lib_path . '/fullajax.js');
+
+  $js  = "var fullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
+  $js .= variable_get('addfullajax_cnfg_data', $_addfullajax_def_conf_base);
+  $js .= variable_get('addfullajax_cnfg_animation', $_addfullajax_def_conf_anim);
+
+  if (variable_get('addfullajax_cnfg_checkmenuit', 1)) {
+    $js .= "\n/* Change active menu item */
+FLAX.Html.onall('load', function(o){
+ jQuery('ul .active').removeClass('active active-trail');
+ jQuery('ul li a[href=\"'+o.url+'\"]').addClass('active active-trail').parent().addClass('active active-trail');
+});";}
+  if (variable_get('addfullajax_cnfg_useGA', 0)) {
+    $js .= "\nFLAX.Html.onall('load', function(o){ _gaq.push(['_trackPageview', o.url]); });";
+  }
+  if (!variable_get('addfullajax_cnfg_usr_cache', 1)) {
+    $js .= "\nFLAX.Default.HAX_ANTICACHE = 1;FLAX.Default.USE_HISTORY_CACHE = 0;";
+  }
+  if ($dbg['debug_ajax']) {
+    $js .= "\nFLAX.Default.DEBUG_AJAX=1;";
+  }
+  if ($dbg['debug_script']) {
+    $js .= "\nFLAX.Default.DEBUG_SCRIPT=1;";
+  }
+  if ($dbg['debug_link']) {
+    $js .= "\nFLAX.Default.DEBUG_LINK=1;";
+  }
+  if ($dbg['debug_style']) {
+    $js .= "\nFLAX.Default.DEBUG_STYLE=1;";
+  }
+
+  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  300));
+
+}
+
+/**
+ * hook_js_alter(&$javascript)
+ * Perform necessary alterations to the JavaScript before it is presented on the page.
+ * @version 2011.05.23
+ * TODO
+
+function addfullajax_js_alter(&$javascript) {
+  //if (!defined('ADDFULLAGAX_NEED_AJAX_RESPONSE')) {return ;}
+  if (!variable_get('preprocess_js')) {
+    //krumo($javascript);
+  }
+
+  //krumo($javascript);
+}
+ */
+/**
+ * hook_css_alter(&$css)
+ * Alter CSS files before they are output on the page.
+ * @version 2011.05.23
+ * TODO
+
+function addfullajax_css_alter(&$css) {
+  if (!defined('ADDFULLAGAX_NEED_AJAX_RESPONSE')) {return ;}
+  if (!variable_get('preprocess_css')) {
+    //krumo($css);
+  }
+}
+ */
+/**
+ * hook_html_head_alter(&$head_elements)
+ * Alter XHTML HEAD tags before they are rendered by drupal_get_html_head().
+ * @version 2011.05.19
+ * TODO
+ *
+
+function addfullajax_html_head_alter(&$head_elements) {
+  //print_r($head_elements);
+}
+ */
+
+/**
+ * Implements hook_page_build(&$page).
+ * @version 2011.05.19
+ * TODO
+ *
+
+
+function addfullajax_page_build(&$page) {
+
+  //echo '<pre>';print_r($page);echo '</pre>';
+  //$page['#theme'] = 'addfullajax';
+  //$page['#theme_wrappers'] = array('addfullajax');
+}
+*/
+
+/**
+ * Implements hook_page_alter(&$page).
+ * @version 2011.07.20
+ * TODO here is something crazy :)
+ *
+#show_messages  =>  1
+#theme  =>  page
+#theme_wrappers  =>  Array
+#type  =>  page
+header  =>  Array
+content  =>  Array
+sidebar_first  =>  Array
+footer  =>  Array
+page_top  =>  Array
+
+ */
+
+function addfullajax_page_alter(&$page) {
+  if (variable_get('addfullajax_need_ajax_response', 0)) {
+    $theme_default = variable_get('theme_default', 'bartik');
+    $regions = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_regions', array());
+    //krumo($page,$regions);
+    foreach ($regions as $name => $region) {
+      if ($region and !empty($page[$region])) {
+        $page[$region] = array();
+      }
+    }
+    /*
+    foreach ($page as $k  =>  $v) {
+      //echo $k .'  =>  '.$v.'<br>';
+      if (is_array($v) && array_key_exists('system_main', $v) || $k == '#show_messages'
+       || $k == '#theme' || $k == '#theme_wrappers' || $k == '#type') {
+        continue;
+      } else {
+        $page[$k] = is_array($v) ? array() : '';
+      }
+      //$page['#theme'] = 'addfullajax';
+      //$page['#theme_wrappers'] = array('html');
+    }
+    */
+    //krumo($page,$regions);
+  }
+}
+
+/**
+ * hook_theme($existing, $type, $theme, $path)
+ * Register a module (or theme's) theme implementations
+ * @version 2011.05.23
+ * TODO
+ *
+
+
+function addfullajax_theme($existing, $type, $theme, $path) {
+  //krumo($existing, $type, $theme, $path);
+  //echo '<pre>';print_r($existing);echo '</pre>'.$type.'<br />'.$theme.'<br />'.$path.'<br />';
+
+  return array(
+    'addfullajax'  =>  array(
+    'template'  =>  'addfullajax',
+      'variables'  =>  array('addfullajax'  =>  array(), 'type'  =>  '1', 'node'  =>  NULL),
+      'render element'  =>  'addfullajax',
+
+    ),
+  );
+}
+ */
+/**
+ * hook_theme_registry_alter(&$theme_registry)
+ * Alter the theme registry information returned from hook_theme().
+ * @version 2011.05.23
+ * TODO
+
+function addfullajax_theme_registry_alter(&$theme_registry) {
+  krumo($theme_registry);
+}
+ */
+/**
+ * hook_preprocess(&$variables, $hook)
+ * Preprocess theme variables.
+ * @version 2011.05.26
+ * TODO also looks not very good  :/
+ */
+function addfullajax_preprocess(&$variables, $hook) {
+
+  if ($hook=='page' && variable_get('addfullajax_need_ajax_response', 0)) {
+    if (isset($variables['logo'])) {
+      $variables['logo'] = FALSE;
+    }
+    if (isset($variables['main_menu'])) {
+      $variables['main_menu'] = FALSE;
+    }
+    if (isset($variables['secondary_menu'])) {
+      $variables['secondary_menu'] = FALSE;
+    }
+    if (isset($variables['site_name'])) {
+      $variables['site_name'] = FALSE;
+    }
+    if (isset($variables['site_slogan'])) {
+      $variables['site_slogan'] = FALSE;}
+  }
+
+}
+
+/**
+ * hook_process(&$variables, $hook)
+ * Process theme variables.
+ * @version 2011.05.26
+ * TODO maybe it no need
+ */
+function addfullajax_process(&$variables, $hook) {
+
+  if ($hook=='html' && variable_get('addfullajax_need_ajax_response', 0)) {
+    $cssId = variable_get('addfullajax_cssid', 'forfullajax');
+    $variables['page'] = preg_replace('/id[\s]*=[\s]*["\']' . $cssId . '["\']/i' , 'id="' . $cssId . '_ax"', $variables['page']);
+  }
+
+}
+/**
+ * hook_tokens($type, $tokens, array $data = array(), array $options = array())
+ * Provide replacement values for placeholder tokens.
+ * @version 2011.05.23
+ * TODO
+
+function addfullajax_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  krumo($type, $tokens, $data , $options);
+  return ;
+}
+ */
+/**
+ * hook_tokens_alter(array &$replacements, array $context)
+ * Alter replacement values for placeholder tokens.
+ * @version 2011.05.23
+ * TODO
+
+
+function addfullajax_tokens_alter(array &$replacements, array $context) {
+  krumo($replacements, $context);
+}
+ */
