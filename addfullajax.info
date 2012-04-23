@@ -1,4 +1,4 @@
-name = Add Fullajax
+name = AddFullAJAX
 description = Add FullAjax library to Drupal
 
 configure = admin/config/development/addfullajax
