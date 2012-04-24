@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file
+ * addfullajax
+ * Install hooks for Add FullAjax.
+ * @since 2012.04.24
+ *
+ */
+
+/**
+ * clean up variables
+ */
+function addfullajax_uninstall() {
+	variable_del('addfullajax_*');
+}

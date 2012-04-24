@@ -2,16 +2,15 @@
 /**
  * @file
  * addfullajax
- * Add FullAjax javascript library to Drupal 7
+ * Add FullAjax library to Drupal 7
  * @since 2011.05.19
- * @version 2012.04.23
  *
  */
 
 /**
  * Define default configuration
- * @version 2012.04.23
  */
+$_addfullajax_need_ajax_response = FALSE;
 $_addfullajax_def_conf_base = "
 /* fullAjaxId - it you content id */
 var filterUrl = ['/admin/','/logout','node/add','/edit'];
@@ -101,8 +100,7 @@ function addfullajax_menu() {
  * TODO More power themes configuration
  */
 function addfullajax_admin_form($form, &$form_state) {
-  global $_addfullajax_def_conf_base;
-  global $_addfullajax_def_conf_anim;
+  global $_addfullajax_def_conf_base, $_addfullajax_def_conf_anim;
 
   $form['addfullajax_cssid'] = array(
     '#type'  =>  'textfield',
@@ -112,6 +110,12 @@ function addfullajax_admin_form($form, &$form_state) {
     '#maxlength'  =>  255,
     '#description'  =>  t('CSS id for content block where shown article'),
     '#required'  =>  TRUE,
+  );
+  $form['addfullajax_cnfg_useHTML5'] = array(
+    '#type'  =>  'checkbox',
+    '#title'  =>  t('HTML5 History API'),
+    '#description'  =>  t('Enable using HTML5 History API'),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_useHTML5', 1),
   );
   $form['addfullajax_cnfg_checkmenuit'] = array(
     '#type'  =>  'checkbox',
@@ -212,8 +216,7 @@ function addfullajax_admin_form($form, &$form_state) {
  * @version 2012.04.23
  */
 function addfullajax_init() {
-
-  variable_set('addfullajax_need_ajax_response', 0);
+  global $_addfullajax_need_ajax_response;
 
   //check whether we allow use fullajax sripts
   if (!_addfullajax_is_allow()) {
@@ -223,7 +226,7 @@ function addfullajax_init() {
   if ((isset($_SERVER['HTTP_AJAX_ENGINE']) && $_SERVER['HTTP_AJAX_ENGINE'] == 'Fullajax')
     || (isset($_REQUEST['ax']) && $_REQUEST['ax'] == 'ok' )
   ) {
-    variable_set('addfullajax_need_ajax_response', 1);
+    $_addfullajax_need_ajax_response = TRUE;
     return ;
   }
 
@@ -257,8 +260,7 @@ function _addfullajax_is_allow() {
  * @version 2012.04.23
  */
 function _addfullajax_add_config_js() {
-  global $_addfullajax_def_conf_base;
-  global $_addfullajax_def_conf_anim;
+  global $_addfullajax_def_conf_base, $_addfullajax_def_conf_anim;
 
   $dbg = variable_get('addfullajax_cnfg_debug');
 
@@ -269,6 +271,10 @@ function _addfullajax_add_config_js() {
   $js  = "var fullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
   $js .= variable_get('addfullajax_cnfg_data', $_addfullajax_def_conf_base);
   $js .= variable_get('addfullajax_cnfg_animation', $_addfullajax_def_conf_anim);
+
+  if (!variable_get('addfullajax_cnfg_useHTML5', 1)){
+    $js .= "\nFLAX.Default.USE_HTML5_HISTORY = 0;";
+  }
 
   if (variable_get('addfullajax_cnfg_checkmenuit', 1)) {
     $js .= "\n/* Change active menu item */
@@ -356,29 +362,21 @@ function addfullajax_page_build(&$page) {
 
 /**
  * Implements hook_page_alter(&$page).
- * @version 2011.07.20
+ * Remove regions that no need to send again
  * TODO here is something crazy :)
- *
-#show_messages  =>  1
-#theme  =>  page
-#theme_wrappers  =>  Array
-#type  =>  page
-header  =>  Array
-content  =>  Array
-sidebar_first  =>  Array
-footer  =>  Array
-page_top  =>  Array
-
  */
 
 function addfullajax_page_alter(&$page) {
-  if (variable_get('addfullajax_need_ajax_response', 0)) {
+  global $_addfullajax_need_ajax_response;
+
+  if ($_addfullajax_need_ajax_response) {
     $theme_default = variable_get('theme_default', 'bartik');
     $regions = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_regions', array());
-    //krumo($page,$regions);
+    krumo($page,$regions);
     foreach ($regions as $name => $region) {
-      if ($region and !empty($page[$region])) {
-        $page[$region] = array();
+      if ($region && !empty($page[$region])) {
+        //$page[$region] = array();
+        unset($page[$region]);
       }
     }
     /*
@@ -433,12 +431,14 @@ function addfullajax_theme_registry_alter(&$theme_registry) {
 /**
  * hook_preprocess(&$variables, $hook)
  * Preprocess theme variables.
+ * remove elements, for prevent repeat it
  * @version 2011.05.26
  * TODO also looks not very good  :/
  */
 function addfullajax_preprocess(&$variables, $hook) {
+  global $_addfullajax_need_ajax_response;
 
-  if ($hook=='page' && variable_get('addfullajax_need_ajax_response', 0)) {
+  if ($hook == 'page' && $_addfullajax_need_ajax_response) {
     if (isset($variables['logo'])) {
       $variables['logo'] = FALSE;
     }
@@ -460,12 +460,14 @@ function addfullajax_preprocess(&$variables, $hook) {
 /**
  * hook_process(&$variables, $hook)
  * Process theme variables.
+ * remove content id for prevent repeat it
  * @version 2011.05.26
  * TODO maybe it no need
  */
 function addfullajax_process(&$variables, $hook) {
+  global $_addfullajax_need_ajax_response;
 
-  if ($hook=='html' && variable_get('addfullajax_need_ajax_response', 0)) {
+  if ($hook == 'html' && $_addfullajax_need_ajax_response) {
     $cssId = variable_get('addfullajax_cssid', 'forfullajax');
     $variables['page'] = preg_replace('/id[\s]*=[\s]*["\']' . $cssId . '["\']/i' , 'id="' . $cssId . '_ax"', $variables['page']);
   }
