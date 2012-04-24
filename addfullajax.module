@@ -59,7 +59,6 @@ end: function(id){
 
 /**
  * Implements hook_help().
- * @version 2012.04.23
  */
 function addfullajax_help($path, $arg) {
   switch ($path) {
@@ -69,7 +68,6 @@ function addfullajax_help($path, $arg) {
 }
 /**
  * Implements hook_permission().
- * @version 2011.05.19
  */
 function addfullajax_permission() {
   return array(
@@ -81,8 +79,7 @@ function addfullajax_permission() {
 }
 /**
  * Implements hook_menu().
- * @version 2011.05.19
-  */
+ */
 function addfullajax_menu() {
   $items = array();
 
@@ -93,140 +90,140 @@ function addfullajax_menu() {
     'page arguments'  =>  array('addfullajax_admin_form'),
     'access arguments'  =>  array('administer addfullajax'),
     'type'  =>  MENU_NORMAL_ITEM,
+    'file' => 'addfullajax.admin.inc'
   );
   return $items;
 }
 
-/**
- * Form function, called by drupal_get_form()
- * @version 2012.04.24
- */
-function addfullajax_admin_form($form, &$form_state) {
+// /**
+//  * Form function, called by drupal_get_form()
+//  * @version 2012.04.24
+//  */
+// function addfullajax_admin_form($form, &$form_state) {
 
-//   $form['addfullajax_cssid'] = array(
-//     '#type'  =>  'textfield',
-//     '#title'  =>  t('CSS id for content block'),
-//     '#default_value'  =>  variable_get('addfullajax_cssid', 'forajax'),
-//     '#size'  =>  12,
-//     '#maxlength'  =>  255,
-//     '#description'  =>  t('CSS id for content block where shown contents'),
-//     '#required'  =>  TRUE,
+// //   $form['addfullajax_cssid'] = array(
+// //     '#type'  =>  'textfield',
+// //     '#title'  =>  t('CSS id for content block'),
+// //     '#default_value'  =>  variable_get('addfullajax_cssid', 'forajax'),
+// //     '#size'  =>  12,
+// //     '#maxlength'  =>  255,
+// //     '#description'  =>  t('CSS id for content block where shown contents'),
+// //     '#required'  =>  TRUE,
+// //   );
+
+//   $form['addfullajax_themes'] = array(
+//       '#type'  =>  'fieldset',
+//       '#title'  =>  t('Themes configs'),
+//       '#collapsible'  =>  FALSE,
+//       '#collapsed'  =>  FALSE,
+//       'addfullajax_themes_cur_theme'  =>  array(
+//           '#type'  =>  'fieldset',
+//           '#title'  =>  t('Render regions of a theme'),
+//           '#collapsible'  =>  TRUE,
+//           '#collapsed'  =>  TRUE,
+//           '#weight' => 30
+//       ),
+//   );
+//   $themes = list_themes();
+//   $active_themes = array();
+//   foreach ($themes as $name => $them) {
+//     if ($them->status) {
+//       $active_themes[$name] = $name;
+//       $form['addfullajax_themes']['addfullajax_themes_' . $name . '_main_region'] = array(
+//         '#type'   =>  'select',
+//         '#title'  =>  t('Main region for @theme', array('@theme' => $name)),
+//         '#description'  =>  t('Select region that used for display main content.'),
+//         '#options' => $themes[$name]->info['regions'],
+//         '#default_value'  =>  variable_get('addfullajax_themes_' . $name . '_main_region', 'content'),
+//       );
+//       $form['addfullajax_themes']['addfullajax_themes_cur_theme']['addfullajax_themes_' . $name . '_regions'] = array(
+//         '#type'   =>  'checkboxes',
+//         '#title'  =>  t('For @theme', array('@theme' => $name)),
+//         '#description'  =>  t('Select regions that will be rendered for each FullAjax answer.'),
+//         '#options'  =>  $themes[$name]->info['regions'],
+//         '#default_value'  =>  variable_get('addfullajax_themes_' . $name . '_regions', array('content')),
+//       );
+//     }
+//   }
+//   $form['addfullajax_themes']['addfullajax_themes_themes'] = array(
+//       '#type'  =>  'fieldset',
+//       '#title'  =>  t('Disable for template'),
+//       '#collapsible'  =>  TRUE,
+//       '#collapsed'  =>  TRUE,
+//       '#weight' => 31,
+//       'addfullajax_themes_disabled'  =>  array(
+//           '#type'   =>  'checkboxes',
+//           '#title'  =>  t('Disable for themes'),
+//           '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
+//           '#options'  =>  $active_themes,
+//           '#default_value'  =>  variable_get('addfullajax_themes_disabled', array('seven')),
+//       ),
 //   );
 
-  $form['addfullajax_cnfg_themes'] = array(
-      '#type'  =>  'fieldset',
-      '#title'  =>  t('Themes configs'),
-      '#collapsible'  =>  FALSE,
-      '#collapsed'  =>  FALSE,
-      'addfullajax_cnfg_themes_cur_theme'  =>  array(
-          '#type'  =>  'fieldset',
-          '#title'  =>  t('Render regions of a theme'),
-          '#collapsible'  =>  TRUE,
-          '#collapsed'  =>  TRUE,
-          '#weight' => 30
-      ),
-  );
-  $themes = list_themes();
-  $active_themes = array();
-  foreach ($themes as $name => $them) {
-    if ($them->status) {
-      $active_themes[$name] = $name;
-      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_' . $name . '_main_region'] = array(
-        '#type'   =>  'select',
-        '#title'  =>  t('Main region for @theme', array('@theme' => $name)),
-        '#description'  =>  t('Select region that used for display main content.'),
-        '#options' => $themes[$name]->info['regions'],
-        '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_main_region', 'content'),
-      );
-      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_cur_theme']['addfullajax_cnfg_themes_' . $name . '_regions'] = array(
-        '#type'   =>  'checkboxes',
-        '#title'  =>  t('For @theme', array('@theme' => $name)),
-        '#description'  =>  t('Select regions that will be rendered for each FullAjax answer.'),
-        '#options'  =>  $themes[$name]->info['regions'],
-        '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_regions', array('content')),
-      );
-    }
-  }
-  $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_themes'] = array(
-      '#type'  =>  'fieldset',
-      '#title'  =>  t('Disable for template'),
-      '#collapsible'  =>  TRUE,
-      '#collapsed'  =>  TRUE,
-      '#weight' => 31,
-      'addfullajax_cnfg_themes_disabled'  =>  array(
-          '#type'   =>  'checkboxes',
-          '#title'  =>  t('Disable for themes'),
-          '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
-          '#options'  =>  $active_themes,
-          '#default_value'  =>  variable_get('addfullajax_cnfg_themes_disabled', array('seven')),
-      ),
-  );
-
-  $form['addfullajax_cnfg_use_html5'] = array(
-    '#type'  =>  'checkbox',
-    '#title'  =>  t('HTML5 History API'),
-    '#description'  =>  t('Enable using HTML5 History API'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_use_html5', 1),
-  );
-  $form['addfullajax_cnfg_checkmenuit'] = array(
-    '#type'  =>  'checkbox',
-    '#title'  =>  t('Auto check active menu item'),
-    '#description'  =>  t('Enable auto check the active menu item'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_checkmenuit', 1),
-  );
-  $form['addfullajax_cnfg_usr_cache'] = array(
-    '#type'   =>  'checkbox',
-    '#title'  =>  t('User-side Cache'),
-    '#description'  =>  t('Enable Cache on user-side'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_usr_cache', 1),
-  );
-  $form['addfullajax_cnfg_useGA'] = array(
-    '#type'   =>  'checkbox',
-    '#title'  =>  t('I use Google Analytics'),
-    '#description'  =>  t('Check if you use Google Analytics'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_useGA', 0),
-  );
-  $form['addfullajax_cnfg_data'] = array(
-    '#type'  =>  'textarea',
-    '#title'  =>  t('FullAjax configuration'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_data', _addfullajax_def_values('conf_base')),
-    '#cols'  =>  10,
-    '#rows'  =>  12,
-    '#description'  =>  t('JavaScript code for FullAjax configuration'),
-    '#required'  =>  TRUE,
-  );
-  $form['addfullajax_cnfg_animation'] = array(
-    '#type'  =>  'textarea',
-    '#title'  =>  t('Code for AJAX animation'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_animation', _addfullajax_def_values('conf_anim')),
-    '#cols'  =>  10,
-    '#rows'  =>  12,
-    '#description'  =>  t('JavaScript code for AJAX animation'),
-    '#required'  =>  FALSE,
-  );
+//   $form['addfullajax_use_html5'] = array(
+//     '#type'  =>  'checkbox',
+//     '#title'  =>  t('HTML5 History API'),
+//     '#description'  =>  t('Enable using HTML5 History API'),
+//     '#default_value'  =>  variable_get('addfullajax_use_html5', 1),
+//   );
+//   $form['addfullajax_checkmenuit'] = array(
+//     '#type'  =>  'checkbox',
+//     '#title'  =>  t('Auto check active menu item'),
+//     '#description'  =>  t('Enable auto check the active menu item'),
+//     '#default_value'  =>  variable_get('addfullajax_checkmenuit', 1),
+//   );
+//   $form['addfullajax_usr_cache'] = array(
+//     '#type'   =>  'checkbox',
+//     '#title'  =>  t('User-side Cache'),
+//     '#description'  =>  t('Enable Cache on user-side'),
+//     '#default_value'  =>  variable_get('addfullajax_usr_cache', 1),
+//   );
+//   $form['addfullajax_useGA'] = array(
+//     '#type'   =>  'checkbox',
+//     '#title'  =>  t('I use Google Analytics'),
+//     '#description'  =>  t('Check if you use Google Analytics'),
+//     '#default_value'  =>  variable_get('addfullajax_useGA', 0),
+//   );
+//   $form['addfullajax_data'] = array(
+//     '#type'  =>  'textarea',
+//     '#title'  =>  t('FullAjax configuration'),
+//     '#default_value'  =>  variable_get('addfullajax_data', _addfullajax_def_values('conf_base')),
+//     '#cols'  =>  10,
+//     '#rows'  =>  12,
+//     '#description'  =>  t('JavaScript code for FullAjax configuration'),
+//     '#required'  =>  TRUE,
+//   );
+//   $form['addfullajax_animation'] = array(
+//     '#type'  =>  'textarea',
+//     '#title'  =>  t('Code for AJAX animation'),
+//     '#default_value'  =>  variable_get('addfullajax_animation', _addfullajax_def_values('conf_anim')),
+//     '#cols'  =>  10,
+//     '#rows'  =>  12,
+//     '#description'  =>  t('JavaScript code for AJAX animation'),
+//     '#required'  =>  FALSE,
+//   );
 
 
 
-  $form['addfullajax_cnfg_debug'] = array(
-    '#type'  =>  'checkboxes',
-    '#title'  =>  t('For Debug'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_debug', array()),
-    '#options'  =>  array(
-//    'uncompresed'  =>  t('Use uncompressed lib'),
-      'debug_ajax'  => t('Debug Ajax request'),
-      'debug_script'  => t('Debug script loading'),
-      'debug_link'  =>  t('Debug link loading'),
-      'debug_style'  =>  t('Debug style loading'),
-    ),
-    '#description'  =>  t('Use for debug'),
-    '#prefix'  =>  '<hr />',
-  );
+//   $form['addfullajax_debug'] = array(
+//     '#type'  =>  'checkboxes',
+//     '#title'  =>  t('For Debug'),
+//     '#default_value'  =>  variable_get('addfullajax_debug', array()),
+//     '#options'  =>  array(
+// //    'uncompresed'  =>  t('Use uncompressed lib'),
+//       'debug_ajax'  => t('Debug Ajax request'),
+//       'debug_script'  => t('Debug script loading'),
+//       'debug_link'  =>  t('Debug link loading'),
+//       'debug_style'  =>  t('Debug style loading'),
+//     ),
+//     '#description'  =>  t('Use for debug'),
+//     '#prefix'  =>  '<hr />',
+//   );
 
-  return system_settings_form($form);
-}
+//   return system_settings_form($form);
+// }
 /**
  * Implements hook_init().
- * @version 2012.04.23
  */
 function addfullajax_init() {
   global $_addfullajax_need_ajax_response;
@@ -255,7 +252,7 @@ function addfullajax_init() {
 function _addfullajax_is_allow() {
   //check whether allow for templates
   global $theme_key;
-  $themes_disabled = variable_get('addfullajax_cnfg_themes_disabled', array('seven'));
+  $themes_disabled = variable_get('addfullajax_themes_disabled', array('seven'));
 
   if (!empty($themes_disabled[$theme_key])) {
     return FALSE;
@@ -271,37 +268,36 @@ function _addfullajax_is_allow() {
 
 /**
  * Add JS Configuration for FullAjax
- * @version 2012.04.23
  */
 function _addfullajax_add_config_js() {
 
-  $dbg = variable_get('addfullajax_cnfg_debug');
+  $dbg = variable_get('addfullajax_debug');
 
   //Add base JS
   $lib_path = libraries_get_path('fullajax');
   drupal_add_js($lib_path . '/fullajax.js');
 
   $theme_default = variable_get('theme_default', 'bartik');
-  $main_region = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
+  $main_region = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
 
   $js  = "var fullAjaxId = 'flax-" . $main_region . "';\n";
-  $js .= variable_get('addfullajax_cnfg_data', _addfullajax_def_values('conf_base'));
-  $js .= variable_get('addfullajax_cnfg_animation', _addfullajax_def_values('conf_anim'));
+  $js .= variable_get('addfullajax_data', _addfullajax_def_values('conf_base'));
+  $js .= variable_get('addfullajax_animation', _addfullajax_def_values('conf_anim'));
 
-  if (!variable_get('addfullajax_cnfg_use_html5', 1)) {
+  if (!variable_get('addfullajax_use_html5', 1)) {
     $js .= "\nFLAX.Default.USE_HTML5_HISTORY = 0;";
   }
 
-  if (variable_get('addfullajax_cnfg_checkmenuit', 1)) {
+  if (variable_get('addfullajax_checkmenuit', 1)) {
     $js .= "\n/* Change active menu item */
 FLAX.Html.onall('load', function(o){
  jQuery('ul .active').removeClass('active active-trail');
  jQuery('ul li a[href=\"'+o.url+'\"]').addClass('active active-trail').parent().addClass('active active-trail');
 });";}
-  if (variable_get('addfullajax_cnfg_useGA', 0)) {
+  if (variable_get('addfullajax_useGA', 0)) {
     $js .= "\nFLAX.Html.onall('load', function(o){ _gaq.push(['_trackPageview', o.url]); });";
   }
-  if (!variable_get('addfullajax_cnfg_usr_cache', 1)) {
+  if (!variable_get('addfullajax_usr_cache', 1)) {
     $js .= "\nFLAX.Default.HAX_ANTICACHE = 1;FLAX.Default.USE_HISTORY_CACHE = 0;";
   }
   if ($dbg['debug_ajax']) {
@@ -366,8 +362,10 @@ function template_process_addfullajax_page(&$variables) {
   template_process_page($variables);
 
   $theme_default = variable_get('theme_default', 'bartik');
-  $variables['main_region'] = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
+  $variables['main_region'] = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
   $variables['regions'] = $variables['page']['#addfullajax_regions'];
+
+  $variables['content_id'] = variable_get('addfullajax_cssid', 'forajax');
 }
 
 /**
@@ -395,8 +393,8 @@ function addfullajax_page_alter(&$page) {
   global $_addfullajax_need_ajax_response;
 
   $theme_default = variable_get('theme_default', 'bartik');
-  $allowed_regions = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_regions', array('content' => 'content'));
-  $main_region = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
+  $allowed_regions = variable_get('addfullajax_themes_' . $theme_default . '_regions', array('content' => 'content'));
+  $main_region = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
   //just in case
   $allowed_regions[$main_region] = $main_region;
 

@@ -9,6 +9,7 @@ krumo($variables);
  *   +
  *   $regions = array that contain regions that need render
  *   $main_region = string, region name that contain main contant
+ *   $content_id = CSS id of main block content
  */
 
 foreach ($regions as $region) {

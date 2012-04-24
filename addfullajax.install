@@ -13,7 +13,7 @@
 function addfullajax_uninstall() {
   global $conf;
   foreach ($conf as $k => $var) {
-    if (stristr($k, 'addfullajax_')){
+    if (stristr($k, 'addfullajax_')) {
       variable_del($k);
     }
   }
