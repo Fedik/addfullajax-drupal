@@ -2,7 +2,7 @@
 /**
  * @file
  * addfullajax
- * Install hooks for Add FullAjax.
+ * Install/uninstall file for Add FullAjax.
  * @since 2012.04.24
  *
  */
@@ -11,5 +11,11 @@
  * clean up variables
  */
 function addfullajax_uninstall() {
-	variable_del('addfullajax_*');
+  global $conf;
+  foreach ($conf as $k => $var) {
+    if (stristr($k, 'addfullajax_')){
+      variable_del($k);
+    }
+  }
+
 }

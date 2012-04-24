@@ -10,9 +10,10 @@
 /**
  * Define default configuration
  */
-$_addfullajax_need_ajax_response = FALSE;
-$_addfullajax_def_conf_base = "
-/* fullAjaxId - it you content id */
+function _addfullajax_def_values($name) {
+  $def = array(
+    'conf_base' => "
+/* fullAjaxId - it content id, that generated based on the main region settings */
 var filterUrl = ['/admin/','/logout','node/add','/edit'];
 var filterQuery = ['q=admin','q=user/logout'];
 FLAX.Filter.add({url:'/', id:fullAjaxId});
@@ -32,8 +33,8 @@ FLAX.Html.onall('load', function(o){
   /* here can insert code for execut after content loaded */
   Drupal.attachBehaviors('#'+fullAjaxId);
 });
-";
-$_addfullajax_def_conf_anim = "
+",
+    'conf_anim' => "
 FLAX.Effect.add({id:fullAjaxId, start: function(id, request){
  var mId = jQuery('#'+fullAjaxId), mIdWidth = mId.width(), mIdHeight = mId.height();
  if (!jQuery('#fullAjaxGif').length){
@@ -51,8 +52,10 @@ end: function(id){
  jQuery('#'+fullAjaxId).fadeIn(300);
 }
 });
-";
-
+"
+  );
+  return $def[$name];
+}
 
 /**
  * Implements hook_help().
@@ -96,26 +99,74 @@ function addfullajax_menu() {
 
 /**
  * Form function, called by drupal_get_form()
- * @version 2011.08.25
- * TODO More power themes configuration
+ * @version 2012.04.24
  */
 function addfullajax_admin_form($form, &$form_state) {
-  global $_addfullajax_def_conf_base, $_addfullajax_def_conf_anim;
 
-  $form['addfullajax_cssid'] = array(
-    '#type'  =>  'textfield',
-    '#title'  =>  t('CSS id for content block'),
-    '#default_value'  =>  variable_get('addfullajax_cssid', 'forajax'),
-    '#size'  =>  12,
-    '#maxlength'  =>  255,
-    '#description'  =>  t('CSS id for content block where shown article'),
-    '#required'  =>  TRUE,
+//   $form['addfullajax_cssid'] = array(
+//     '#type'  =>  'textfield',
+//     '#title'  =>  t('CSS id for content block'),
+//     '#default_value'  =>  variable_get('addfullajax_cssid', 'forajax'),
+//     '#size'  =>  12,
+//     '#maxlength'  =>  255,
+//     '#description'  =>  t('CSS id for content block where shown contents'),
+//     '#required'  =>  TRUE,
+//   );
+
+  $form['addfullajax_cnfg_themes'] = array(
+      '#type'  =>  'fieldset',
+      '#title'  =>  t('Themes configs'),
+      '#collapsible'  =>  FALSE,
+      '#collapsed'  =>  FALSE,
+      'addfullajax_cnfg_themes_cur_theme'  =>  array(
+          '#type'  =>  'fieldset',
+          '#title'  =>  t('Render regions of a theme'),
+          '#collapsible'  =>  TRUE,
+          '#collapsed'  =>  TRUE,
+          '#weight' => 30
+      ),
   );
-  $form['addfullajax_cnfg_useHTML5'] = array(
+  $themes = list_themes();
+  $active_themes = array();
+  foreach ($themes as $name => $them) {
+    if ($them->status) {
+      $active_themes[$name] = $name;
+      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_' . $name . '_main_region'] = array(
+        '#type'   =>  'select',
+        '#title'  =>  t('Main region for @theme', array('@theme' => $name)),
+        '#description'  =>  t('Select region that used for display main content.'),
+        '#options' => $themes[$name]->info['regions'],
+        '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_main_region', 'content'),
+      );
+      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_cur_theme']['addfullajax_cnfg_themes_' . $name . '_regions'] = array(
+        '#type'   =>  'checkboxes',
+        '#title'  =>  t('For @theme', array('@theme' => $name)),
+        '#description'  =>  t('Select regions that will be rendered for each FullAjax answer.'),
+        '#options'  =>  $themes[$name]->info['regions'],
+        '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_regions', array('content')),
+      );
+    }
+  }
+  $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_themes'] = array(
+      '#type'  =>  'fieldset',
+      '#title'  =>  t('Disable for template'),
+      '#collapsible'  =>  TRUE,
+      '#collapsed'  =>  TRUE,
+      '#weight' => 31,
+      'addfullajax_cnfg_themes_disabled'  =>  array(
+          '#type'   =>  'checkboxes',
+          '#title'  =>  t('Disable for themes'),
+          '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
+          '#options'  =>  $active_themes,
+          '#default_value'  =>  variable_get('addfullajax_cnfg_themes_disabled', array('seven')),
+      ),
+  );
+
+  $form['addfullajax_cnfg_use_html5'] = array(
     '#type'  =>  'checkbox',
     '#title'  =>  t('HTML5 History API'),
     '#description'  =>  t('Enable using HTML5 History API'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_useHTML5', 1),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_use_html5', 1),
   );
   $form['addfullajax_cnfg_checkmenuit'] = array(
     '#type'  =>  'checkbox',
@@ -138,7 +189,7 @@ function addfullajax_admin_form($form, &$form_state) {
   $form['addfullajax_cnfg_data'] = array(
     '#type'  =>  'textarea',
     '#title'  =>  t('FullAjax configuration'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_data', $_addfullajax_def_conf_base),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_data', _addfullajax_def_values('conf_base')),
     '#cols'  =>  10,
     '#rows'  =>  12,
     '#description'  =>  t('JavaScript code for FullAjax configuration'),
@@ -147,52 +198,14 @@ function addfullajax_admin_form($form, &$form_state) {
   $form['addfullajax_cnfg_animation'] = array(
     '#type'  =>  'textarea',
     '#title'  =>  t('Code for AJAX animation'),
-    '#default_value'  =>  variable_get('addfullajax_cnfg_animation', $_addfullajax_def_conf_anim),
+    '#default_value'  =>  variable_get('addfullajax_cnfg_animation', _addfullajax_def_values('conf_anim')),
     '#cols'  =>  10,
     '#rows'  =>  12,
     '#description'  =>  t('JavaScript code for AJAX animation'),
     '#required'  =>  FALSE,
   );
 
-  $form['addfullajax_cnfg_themes'] = array(
-    '#type'  =>  'fieldset',
-    '#title'  =>  t('Templates config'),
-    '#collapsible'  =>  FALSE,
-    '#collapsed'  =>  FALSE,
-    'addfullajax_cnfg_themes_cur_theme'  =>  array(
-      '#type'  =>  'fieldset',
-      '#title'  =>  t('Disable theme regions'),
-      '#collapsible'  =>  TRUE,
-      '#collapsed'  =>  TRUE,
-  ),
-  );
-  $themes = list_themes();
-  $active_themes = array();
-  foreach ($themes as $name => $them) {
-    if ($them->status) {
-      $active_themes[$name] = $name;
-      $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_cur_theme']['addfullajax_cnfg_themes_' . $name . '_regions'] = array(
-          '#type'   =>  'checkboxes',
-          '#title'  =>  t('For @theme', array('@theme' => $name)),
-          '#description'  =>  t('Disable theme regions, this regions will not be rendered for FullAjax answer.'),
-          '#options'  =>  $themes[$name]->info['regions'],
-          '#default_value'  =>  variable_get('addfullajax_cnfg_themes_' . $name . '_regions', array()),
-      );
-    }
-  }
- $form['addfullajax_cnfg_themes']['addfullajax_cnfg_themes_themes'] = array(
-   '#type'  =>  'fieldset',
-   '#title'  =>  t('Disable for template'),
-   '#collapsible'  =>  TRUE,
-   '#collapsed'  =>  TRUE,
-   'addfullajax_cnfg_themes_disabled'  =>  array(
-     '#type'   =>  'checkboxes',
-     '#title'  =>  t('Disable for themes'),
-     '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
-     '#options'  =>  $active_themes,
-     '#default_value'  =>  variable_get('addfullajax_cnfg_themes_disabled', array('seven')),
-   ),
-  );
+
 
   $form['addfullajax_cnfg_debug'] = array(
     '#type'  =>  'checkboxes',
@@ -220,6 +233,7 @@ function addfullajax_init() {
 
   //check whether we allow use fullajax sripts
   if (!_addfullajax_is_allow()) {
+    $_addfullajax_need_ajax_response = FALSE;
     return ;
   }
 
@@ -260,7 +274,6 @@ function _addfullajax_is_allow() {
  * @version 2012.04.23
  */
 function _addfullajax_add_config_js() {
-  global $_addfullajax_def_conf_base, $_addfullajax_def_conf_anim;
 
   $dbg = variable_get('addfullajax_cnfg_debug');
 
@@ -268,11 +281,14 @@ function _addfullajax_add_config_js() {
   $lib_path = libraries_get_path('fullajax');
   drupal_add_js($lib_path . '/fullajax.js');
 
-  $js  = "var fullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
-  $js .= variable_get('addfullajax_cnfg_data', $_addfullajax_def_conf_base);
-  $js .= variable_get('addfullajax_cnfg_animation', $_addfullajax_def_conf_anim);
+  $theme_default = variable_get('theme_default', 'bartik');
+  $main_region = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
 
-  if (!variable_get('addfullajax_cnfg_useHTML5', 1)){
+  $js  = "var fullAjaxId = 'flax-" . $main_region . "';\n";
+  $js .= variable_get('addfullajax_cnfg_data', _addfullajax_def_values('conf_base'));
+  $js .= variable_get('addfullajax_cnfg_animation', _addfullajax_def_values('conf_anim'));
+
+  if (!variable_get('addfullajax_cnfg_use_html5', 1)) {
     $js .= "\nFLAX.Default.USE_HTML5_HISTORY = 0;";
   }
 
@@ -304,137 +320,111 @@ FLAX.Html.onall('load', function(o){
   drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  300));
 
 }
-
 /**
- * hook_js_alter(&$javascript)
- * Perform necessary alterations to the JavaScript before it is presented on the page.
- * @version 2011.05.23
- * TODO
+ * Generate JavaScript for FullAJAX Model2Blocks
+ * @param array $markers - array with block ids
+ */
+function _addfullajax_add_model2bloks($markers) {
+  $m2b = array();
 
-function addfullajax_js_alter(&$javascript) {
-  //if (!defined('ADDFULLAGAX_NEED_AJAX_RESPONSE')) {return ;}
-  if (!variable_get('preprocess_js')) {
-    //krumo($javascript);
+  foreach (array_unique($markers) as $block) {
+  	$m2b [] = '\'' . $block . '\':\'' . $block . '\'';
   }
+  $js  = 'FLAX.Model2Blocks[fullAjaxId] = {' . implode(',', $m2b) . '};';
 
-  //krumo($javascript);
+  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  301));
 }
- */
-/**
- * hook_css_alter(&$css)
- * Alter CSS files before they are output on the page.
- * @version 2011.05.23
- * TODO
-
-function addfullajax_css_alter(&$css) {
-  if (!defined('ADDFULLAGAX_NEED_AJAX_RESPONSE')) {return ;}
-  if (!variable_get('preprocess_css')) {
-    //krumo($css);
-  }
-}
- */
-/**
- * hook_html_head_alter(&$head_elements)
- * Alter XHTML HEAD tags before they are rendered by drupal_get_html_head().
- * @version 2011.05.19
- * TODO
- *
-
-function addfullajax_html_head_alter(&$head_elements) {
-  //print_r($head_elements);
-}
- */
 
 /**
- * Implements hook_page_build(&$page).
- * @version 2011.05.19
- * TODO
- *
-
-
-function addfullajax_page_build(&$page) {
-
-  //echo '<pre>';print_r($page);echo '</pre>';
-  //$page['#theme'] = 'addfullajax';
-  //$page['#theme_wrappers'] = array('addfullajax');
-}
+* Implements hook_theme().
+* add own theme
 */
+function addfullajax_theme() {
+  return array(
+    //theme for render FullAJAX answer
+    'addfullajax_page' => array(
+      'render element' => 'page',
+    ),
+  );
+}
+/**
+ * process for theme_addfullajax_page
+ * add $regions variable - regions that need render, not allowed was removed in addfullajax_page_alter
+ * @param array $variables
+ */
+function template_process_addfullajax_page(&$variables) {
+  $variables['regions'] = element_children($variables['page']);
+}
+
+/**
+ * theme for render a page for fullajax answer
+ * @param array $variables
+ */
+function theme_addfullajax_page(&$variables) {
+  //krumo($variables);
+  $output = '';
+  //render regions
+  foreach ($variables['regions'] as $region) {
+    $output .= '<!-- :ax:flax-' . $region . ':begin: //-->';
+    $output .= render($variables['page'][$region]);
+    $output .= '<!-- :ax:flax-' . $region . ':end: //-->';
+  }
+  return $output;
+}
 
 /**
  * Implements hook_page_alter(&$page).
  * Remove regions that no need to send again
- * TODO here is something crazy :)
  */
 
 function addfullajax_page_alter(&$page) {
   global $_addfullajax_need_ajax_response;
 
+  $theme_default = variable_get('theme_default', 'bartik');
+  $allowed_regions = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_regions', array('content' => 'content'));
+  $main_region = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
+  //just in case
+  $allowed_regions[$main_region] = $main_region;
+
   if ($_addfullajax_need_ajax_response) {
-    $theme_default = variable_get('theme_default', 'bartik');
-    $regions = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_regions', array());
-    krumo($page,$regions);
-    foreach ($regions as $name => $region) {
-      if ($region && !empty($page[$region])) {
-        //$page[$region] = array();
-        unset($page[$region]);
+    //use own theme for answer
+    $page['#theme'] = 'addfullajax_page';
+    //$page['#theme_wrappers'] = array('addfullajax_html');
+
+    //remove regions that no need render
+    foreach (element_children($page) as $key) {
+      if (empty($allowed_regions[$key])) {
+        unset($page[$key]);
       }
     }
-    /*
-    foreach ($page as $k  =>  $v) {
-      //echo $k .'  =>  '.$v.'<br>';
-      if (is_array($v) && array_key_exists('system_main', $v) || $k == '#show_messages'
-       || $k == '#theme' || $k == '#theme_wrappers' || $k == '#type') {
-        continue;
-      } else {
-        $page[$k] = is_array($v) ? array() : '';
+  }
+  else {//add markers
+    $regions = array();
+
+    foreach ($allowed_regions as $r) {
+      if (isset($page[$r])) {
+        //add wraper
+        $page[$r]['#prefix'] = empty($page[$r]['#prefix']) ? '<div id="flax-' . $r . '">' : '<div id="flax-' . $r . '">' . $page[$r]['#prefix'];
+        $page[$r]['#suffix'] = empty($page[$r]['#suffix']) ? '</div>' : $page[$r]['#suffix'] . '</div>';
+        //collect only alloved regions
+        $regions[] = 'flax-' . $r;
       }
-      //$page['#theme'] = 'addfullajax';
-      //$page['#theme_wrappers'] = array('html');
     }
-    */
-    //krumo($page,$regions);
+    //add Model2Blocks if more than one region
+    $count = count($regions);
+    if ($count && $count > 1) {
+      _addfullajax_add_model2bloks($regions);
+    }
   }
 }
 
-/**
- * hook_theme($existing, $type, $theme, $path)
- * Register a module (or theme's) theme implementations
- * @version 2011.05.23
- * TODO
- *
-
-
-function addfullajax_theme($existing, $type, $theme, $path) {
-  //krumo($existing, $type, $theme, $path);
-  //echo '<pre>';print_r($existing);echo '</pre>'.$type.'<br />'.$theme.'<br />'.$path.'<br />';
-
-  return array(
-    'addfullajax'  =>  array(
-    'template'  =>  'addfullajax',
-      'variables'  =>  array('addfullajax'  =>  array(), 'type'  =>  '1', 'node'  =>  NULL),
-      'render element'  =>  'addfullajax',
-
-    ),
-  );
-}
- */
-/**
- * hook_theme_registry_alter(&$theme_registry)
- * Alter the theme registry information returned from hook_theme().
- * @version 2011.05.23
- * TODO
-
-function addfullajax_theme_registry_alter(&$theme_registry) {
-  krumo($theme_registry);
-}
- */
 /**
  * hook_preprocess(&$variables, $hook)
  * Preprocess theme variables.
  * remove elements, for prevent repeat it
  * @version 2011.05.26
  * TODO also looks not very good  :/
- */
+
 function addfullajax_preprocess(&$variables, $hook) {
   global $_addfullajax_need_ajax_response;
 
@@ -456,14 +446,14 @@ function addfullajax_preprocess(&$variables, $hook) {
   }
 
 }
-
+*/
 /**
  * hook_process(&$variables, $hook)
  * Process theme variables.
  * remove content id for prevent repeat it
  * @version 2011.05.26
  * TODO maybe it no need
- */
+
 function addfullajax_process(&$variables, $hook) {
   global $_addfullajax_need_ajax_response;
 
@@ -473,25 +463,4 @@ function addfullajax_process(&$variables, $hook) {
   }
 
 }
-/**
- * hook_tokens($type, $tokens, array $data = array(), array $options = array())
- * Provide replacement values for placeholder tokens.
- * @version 2011.05.23
- * TODO
-
-function addfullajax_tokens($type, $tokens, array $data = array(), array $options = array()) {
-  krumo($type, $tokens, $data , $options);
-  return ;
-}
- */
-/**
- * hook_tokens_alter(array &$replacements, array $context)
- * Alter replacement values for placeholder tokens.
- * @version 2011.05.23
- * TODO
-
-
-function addfullajax_tokens_alter(array &$replacements, array $context) {
-  krumo($replacements, $context);
-}
- */
+*/
