@@ -328,7 +328,7 @@ function _addfullajax_add_model2bloks($markers) {
   $m2b = array();
 
   foreach (array_unique($markers) as $block) {
-  	$m2b [] = '\'' . $block . '\':\'' . $block . '\'';
+  	$m2b [] = '\'flax-' . $block . '\':\'flax-' . $block . '\'';
   }
   $js  = 'FLAX.Model2Blocks[fullAjaxId] = {' . implode(',', $m2b) . '};';
 
@@ -344,24 +344,38 @@ function addfullajax_theme() {
     //theme for render FullAJAX answer
     'addfullajax_page' => array(
       'render element' => 'page',
+      'template' => 'addfullajax-page',
     ),
   );
 }
 /**
+ * preprocess for theme_addfullajax_page
+ * need for apply all variables for page
+ * @param array $variables
+ */
+function template_preprocess_addfullajax_page(&$variables) {
+  template_preprocess_page($variables);
+}
+/**
  * process for theme_addfullajax_page
- * add $regions variable - regions that need render, not allowed was removed in addfullajax_page_alter
+ * add couple new variables: regions - regions that need render, not allowed was removed in addfullajax_page_alter
  * @param array $variables
  */
 function template_process_addfullajax_page(&$variables) {
-  $variables['regions'] = element_children($variables['page']);
+  //apply page variables
+  template_process_page($variables);
+
+  $theme_default = variable_get('theme_default', 'bartik');
+  $variables['main_region'] = variable_get('addfullajax_cnfg_themes_' . $theme_default . '_main_region', 'content');
+  $variables['regions'] = $variables['page']['#addfullajax_regions'];
 }
 
 /**
  * theme for render a page for fullajax answer
+ * not used @see addfullajax-page.tpl.php file
  * @param array $variables
  */
 function theme_addfullajax_page(&$variables) {
-  //krumo($variables);
   $output = '';
   //render regions
   foreach ($variables['regions'] as $region) {
@@ -390,13 +404,18 @@ function addfullajax_page_alter(&$page) {
     //use own theme for answer
     $page['#theme'] = 'addfullajax_page';
     //$page['#theme_wrappers'] = array('addfullajax_html');
+    $page['#addfullajax_regions'] = array();
 
     //remove regions that no need render
     foreach (element_children($page) as $key) {
       if (empty($allowed_regions[$key])) {
         unset($page[$key]);
       }
+      else {
+        $page['#addfullajax_regions'][] = $key;
+      }
     }
+
   }
   else {//add markers
     $regions = array();
@@ -407,7 +426,7 @@ function addfullajax_page_alter(&$page) {
         $page[$r]['#prefix'] = empty($page[$r]['#prefix']) ? '<div id="flax-' . $r . '">' : '<div id="flax-' . $r . '">' . $page[$r]['#prefix'];
         $page[$r]['#suffix'] = empty($page[$r]['#suffix']) ? '</div>' : $page[$r]['#suffix'] . '</div>';
         //collect only alloved regions
-        $regions[] = 'flax-' . $r;
+        $regions[] =  $r;
       }
     }
     //add Model2Blocks if more than one region
