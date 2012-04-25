@@ -9,6 +9,7 @@
 
 /**
  * Define default configuration
+ * @todo rewrite animation
  */
 function _addfullajax_def_values($name) {
   $def = array(
@@ -198,7 +199,7 @@ function _addfullajax_add_model2bloks($markers) {
   $m2b = array();
 
   foreach (array_unique($markers) as $block) {
-  	$m2b [] = '\'' . $block . '\':\'' . $block . '\'';
+    $m2b [] = '\'' . $block . '\':\'' . $block . '\'';
   }
   $js  = 'FLAX.Model2Blocks[fullAjaxId] = {' . implode(',', $m2b) . '};';
 
