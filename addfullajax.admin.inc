@@ -135,7 +135,6 @@ function addfullajax_admin_form($form, &$form_state) {
       '#title'  =>  t('For Debug'),
       '#default_value'  =>  variable_get('addfullajax_debug', array()),
       '#options'  =>  array(
-          //    'uncompresed'  =>  t('Use uncompressed lib'),
           'debug_ajax'  => t('Debug Ajax request'),
           'debug_script'  => t('Debug script loading'),
           'debug_link'  =>  t('Debug link loading'),
@@ -151,9 +150,9 @@ function addfullajax_admin_form($form, &$form_state) {
 }
 /**
  * submit function for addfullajax_admin_form
- */
+
 function addfullajax_settings_form_submit($form, &$form_state) {
   krumo($form_state);exit;
 }
-
+ */
 
