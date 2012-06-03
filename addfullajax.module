@@ -14,13 +14,13 @@
 function _addfullajax_def_values($name) {
   $def = array(
     'conf_base' => "
-/* fullAjaxId - it content id, that generated based on the main region settings */
+/* addFullAjaxId - it content id */
 var filterUrl = ['/admin/','/logout','node/add','/edit'];
 var filterQuery = ['q=admin','q=user/logout'];
-FLAX.Filter.add({url:'/', id:fullAjaxId});
+FLAX.Filter.add({url:'/', id:addFullAjaxId});
 FLAX.Filter.add({url:filterUrl, query:filterQuery, type:'nowrap'});
 FLAX.directLink();
-FLAX.linkEqual[':ax:'+fullAjaxId+':'] = '!';
+FLAX.linkEqual[':ax:'+addFullAjaxId+':'] = '!';
 FLAX.linkEqual['[~q~]'] = '?';
 FLAX.Filter.on('beforewrap', function(ops){
 var regExt = /.+\.(jpg|jpeg|gif|png|mp3|mp4|ogg|ogv|webm|pdf|txt|odf|ods)$/i;
@@ -28,29 +28,29 @@ if (regExt.test(ops.el.href) || ops.el.nodeName == 'FORM' || ops.el.href.indexOf
 });
 FLAX.Html.onall('unload', function(o){
   /* here can insert code for execut before content unloaded */
-  Drupal.detachBehaviors('#'+fullAjaxId);
+  Drupal.detachBehaviors('#'+addFullAjaxId);
 });
 FLAX.Html.onall('load', function(o){
   /* here can insert code for execut after content loaded */
-  Drupal.attachBehaviors('#'+fullAjaxId);
+  Drupal.attachBehaviors('#'+addFullAjaxId);
 });
 ",
     'conf_anim' => "
-FLAX.Effect.add({id:fullAjaxId, start: function(id, request){
- var mId = jQuery('#'+fullAjaxId), mIdWidth = mId.width(), mIdHeight = mId.height();
- if (!jQuery('#fullAjaxGif').length){
-  jQuery('<img/>',{
-   'id':'fullAjaxGif',
-   'src':'sites/all/modules/addfullajax/images/ajax-loader.gif',
-   'alt':'Loading...',
-   'style':'position:absolute;border:none;padding:0;margin-left:'+ mIdWidth*0.5 +'px;top:'+ mIdHeight*0.3 +'px;'
-  }).insertBefore(mId);
- };
- mId.fadeOut(300,request());
+var addfullajaxGif = jQuery('<img/>',{
+ 'id':'addfullajaxGif',
+ 'src':'sites/all/modules/addfullajax/images/ajax-loader.gif',
+ 'alt':'Loading...',
+ 'style': 'position:absolute;left:50%;z-index:800;'
+});
+FLAX.Effect.add({id:addFullAjaxId, start: function(id, request){
+ var mId = jQuery('#'+addFullAjaxId);
+ if (!jQuery('#addfullajaxGif').length){addfullajaxGif.insertBefore(mId);};
+ mId.stop().animate({height:'30%',opacity:0},600,request());
 },
 end: function(id){
- if (jQuery('#fullAjaxGif').length){jQuery('#fullAjaxGif').remove();};
- jQuery('#'+fullAjaxId).fadeIn(300);
+ var i = jQuery('#addfullajaxGif');
+ if (i.length){i.remove();};
+ jQuery('#'+addFullAjaxId).stop().animate({height:'+=0%',opacity: 1},300);
 }
 });
 "
@@ -154,9 +154,9 @@ function _addfullajax_add_config_js() {
   //$theme_default = variable_get('theme_default', 'bartik');
   //$main_region = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
 
-  $js  = "var fullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
+  $js  = "var addFullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
   $js .= variable_get('addfullajax_data', _addfullajax_def_values('conf_base'));
-  $js .= variable_get('addfullajax_animation', _addfullajax_def_values('conf_anim'));
+  $js .= variable_get('addfullajax_animation-b', _addfullajax_def_values('conf_anim'));
 
   if (!variable_get('addfullajax_use_html5', 1)) {
     $js .= "\nFLAX.Default.USE_HTML5_HISTORY = 0;";
@@ -187,7 +187,7 @@ FLAX.Html.onall('load', function(o){
     $js .= "\nFLAX.Default.DEBUG_STYLE=1;";
   }
 
-  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  300));
+  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  10));
 
 }
 /**
@@ -198,8 +198,8 @@ FLAX.Html.onall('load', function(o){
 function _addfullajax_add_model2bloks($markers) {
   $markers = array_unique($markers);
   if ($js = json_encode(array_combine($markers, $markers))) {
-    $js =  'FLAX.Model2Blocks[fullAjaxId] = '. $js .';';
-    drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  301));
+    $js =  'FLAX.Model2Blocks[addFullAjaxId] = ' . $js . ';';
+    drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  11));
   }
 }
 
