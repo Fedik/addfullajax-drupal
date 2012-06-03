@@ -196,14 +196,11 @@ FLAX.Html.onall('load', function(o){
  * @param array $markers - array with block ids
  */
 function _addfullajax_add_model2bloks($markers) {
-  $m2b = array();
-
-  foreach (array_unique($markers) as $block) {
-    $m2b [] = '\'' . $block . '\':\'' . $block . '\'';
+  $markers = array_unique($markers);
+  if ($js = json_encode(array_combine($markers, $markers))) {
+    $js =  'FLAX.Model2Blocks[fullAjaxId] = '. $js .';';
+    drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  301));
   }
-  $js  = 'FLAX.Model2Blocks[fullAjaxId] = {' . implode(',', $m2b) . '};';
-
-  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  301));
 }
 
 /**
