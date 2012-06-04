@@ -40,11 +40,6 @@ function addfullajax_admin_form($form, &$form_state) {
   foreach ($themes as $name => $them) {
     if ($them->status) {
       $active_themes[$name] = $name;
-//       $regions = $themes[$name]->info['regions'];
-//       $regions += array(
-//           'messages' => 'messages',
-//           'breadcrumb' => 'breadcrumb'
-//       );
 
       $form['addfullajax_themes']['addfullajax_themes_' . $name . '_main_region'] = array(
           '#type'   =>  'select',
@@ -61,13 +56,6 @@ function addfullajax_admin_form($form, &$form_state) {
           '#options'  =>  $themes[$name]->info['regions'],
           '#default_value'  =>  variable_get('addfullajax_themes_' . $name . '_regions', array('content')),
       );
-//       foreach ($regions as $k => $region) {
-//         $form['addfullajax_themes']['theme_regions']['addfullajax_themes_' . $name . '_regions["'.$k.'"]'   ] = array(
-//           '#type' => 'textfield',
-//           '#title'  =>  t('Id for @region', array('@region' => $region)),
-//           '#description'  =>  t('Enter real CSS id of <em>@region</em> wraper. Or leave empty, then it will not rendered for FullAJAX answer.', array('@region' => $region)),
-//         );
-//       }
     }
   }
   $form['addfullajax_themes']['addfullajax_themes_themes'] = array(
@@ -144,15 +132,5 @@ function addfullajax_admin_form($form, &$form_state) {
       '#prefix'  =>  '<hr />',
   );
 
-  //$form['#submit'][] = 'addfullajax_settings_form_submit';
-
   return system_settings_form($form);
 }
-/**
- * submit function for addfullajax_admin_form
-
-function addfullajax_settings_form_submit($form, &$form_state) {
-  krumo($form_state);exit;
-}
- */
-

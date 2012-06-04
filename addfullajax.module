@@ -4,12 +4,10 @@
  * addfullajax
  * Add FullAjax library to Drupal 7
  * @since 2011.05.19
- *
  */
 
 /**
  * Define default configuration
- * @todo rewrite animation
  */
 function _addfullajax_def_values($name) {
   $def = array(
@@ -151,9 +149,6 @@ function _addfullajax_add_config_js() {
   $lib_path = libraries_get_path('fullajax');
   drupal_add_js($lib_path . '/fullajax.js');
 
-  //$theme_default = variable_get('theme_default', 'bartik');
-  //$main_region = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
-
   $js  = "var addFullAjaxId = '" . variable_get('addfullajax_cssid', 'forajax') . "';\n";
   $js .= variable_get('addfullajax_data', _addfullajax_def_values('conf_base'));
   $js .= variable_get('addfullajax_animation-b', _addfullajax_def_values('conf_anim'));
@@ -268,7 +263,6 @@ function theme_addfullajax_page(&$variables) {
  * Implements hook_page_alter(&$page).
  * Remove regions that no need to send again
  */
-
 function addfullajax_page_alter(&$page) {
   global $_addfullajax_need_ajax_response;
 
@@ -318,4 +312,3 @@ function addfullajax_page_alter(&$page) {
     }
   }
 }
-

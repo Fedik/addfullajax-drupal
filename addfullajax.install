@@ -17,5 +17,4 @@ function addfullajax_uninstall() {
       variable_del($k);
     }
   }
-
 }
