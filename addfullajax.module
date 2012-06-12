@@ -51,7 +51,7 @@ end: function(id){
  jQuery('#'+addFullAjaxId).stop().animate({height:'+=0%',opacity: 1},300);
 }
 });
-"
+",
   );
   return $def[$name];
 }
@@ -70,9 +70,9 @@ function addfullajax_help($path, $arg) {
  */
 function addfullajax_permission() {
   return array(
-    'administer addfullajax'  =>  array(
-      'title'  =>  t('Administer the module'),
-      'description'  =>  t('Perform maintenance tasks for the Add FullAJAX module.'),
+    'administer addfullajax' => array(
+      'title' => t('Administer the module'),
+      'description' => t('Perform maintenance tasks for the Add FullAJAX module.'),
     ),
   );
 }
@@ -83,12 +83,12 @@ function addfullajax_menu() {
   $items = array();
 
   $items['admin/config/development/addfullajax'] = array(
-    'title'  =>  'Add FullAJAX',
-    'description'  =>  'Configuration for Add FullAJAX module',
-    'page callback'  =>  'drupal_get_form',
-    'page arguments'  =>  array('addfullajax_admin_form'),
-    'access arguments'  =>  array('administer addfullajax'),
-    'type'  =>  MENU_NORMAL_ITEM,
+    'title' => 'Add FullAJAX',
+    'description' => 'Configuration for Add FullAJAX module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('addfullajax_admin_form'),
+    'access arguments' => array('administer addfullajax'),
+    'type' => MENU_NORMAL_ITEM,
     'file' => 'addfullajax.admin.inc',
   );
   return $items;
@@ -184,23 +184,25 @@ FLAX.Html.onall('load', function(o){
     $js .= "\nFLAX.Default.DEBUG_STYLE=1;";
   }
 
-  drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  10));
+  drupal_add_js($js, array('type' => 'inline', 'weight' => 10));
 
 }
 /**
  * Generate JavaScript for FullAJAX Model2Blocks.
- * @param array $markers - array with block ids
+ * @param
+ *   $markers - array with block ids
  */
 function _addfullajax_add_model2bloks($markers) {
   $markers = array_unique($markers);
   if ($js = json_encode(array_combine($markers, $markers))) {
     $js =  'FLAX.Model2Blocks[addFullAjaxId] = ' . $js . ';';
-    drupal_add_js($js, array('type'  =>  'inline', 'weight'  =>  11));
+    drupal_add_js($js, array('type' => 'inline', 'weight' => 11));
   }
 }
 
 /**
-* Implements hook_theme() for add own theme.
+* Implements hook_theme()
+* for add own theme.
 */
 function addfullajax_theme() {
   return array(
@@ -238,8 +240,10 @@ function template_process_addfullajax_page(&$variables) {
 /**
  * Theme for render a page for fullajax answer
  * not used.
- * @see addfullajax-page.tpl.php file
- * @param array $variables
+ * @see
+ *   addfullajax-page.tpl.php file
+ * @param
+ *   $variables array
  */
 function theme_addfullajax_page(&$variables) {
   $output = '';
@@ -261,7 +265,7 @@ function theme_addfullajax_page(&$variables) {
 
 /**
  * Implements hook_page_alter(&$page).
- * Remove regions that no need to send again
+ * Remove regions that no need to send again.
  */
 function addfullajax_page_alter(&$page) {
   global $_addfullajax_need_ajax_response;
