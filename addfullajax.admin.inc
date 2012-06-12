@@ -5,10 +5,6 @@
  * admin things
  */
 
-
-/**
- * Form function, called by drupal_get_form()
- */
 function addfullajax_admin_form($form, &$form_state) {
 
   $form['addfullajax_cssid'] = array(
@@ -52,7 +48,7 @@ function addfullajax_admin_form($form, &$form_state) {
       $form['addfullajax_themes']['theme_regions']['addfullajax_themes_' . $name . '_regions'] = array(
         '#type'   =>  'checkboxes',
         '#title'  =>  t('For @theme', array('@theme' => $name)),
-        '#description'  =>  t('Select regions that will be rendered for each FullAjax answer.'),
+        '#description'  =>  t('Select regions that will be rendered for each FullAJAX answer.'),
         '#options'  =>  $themes[$name]->info['regions'],
         '#default_value'  =>  variable_get('addfullajax_themes_' . $name . '_regions', array('content')),
       );
@@ -67,7 +63,7 @@ function addfullajax_admin_form($form, &$form_state) {
     'addfullajax_themes_disabled'  =>  array(
       '#type'   =>  'checkboxes',
       '#title'  =>  t('Disable for themes'),
-      '#description'  =>  t('Disable for theme. FullAjax will not connect for these themes.'),
+      '#description'  =>  t('Disable for theme. FullAJAX will not connect for these themes.'),
       '#options'  =>  $active_themes,
       '#default_value'  =>  variable_get('addfullajax_themes_disabled', array('seven')),
     ),
@@ -100,11 +96,11 @@ function addfullajax_admin_form($form, &$form_state) {
   );
   $form['addfullajax_data'] = array(
     '#type'  =>  'textarea',
-    '#title'  =>  t('FullAjax configuration'),
+    '#title'  =>  t('FullAJAX configuration'),
     '#default_value'  =>  variable_get('addfullajax_data', _addfullajax_def_values('conf_base')),
     '#cols'  =>  10,
     '#rows'  =>  12,
-    '#description'  =>  t('JavaScript code for FullAjax configuration'),
+    '#description'  =>  t('JavaScript code for FullAJAX configuration'),
     '#required'  =>  TRUE,
   );
   $form['addfullajax_animation'] = array(

@@ -2,12 +2,12 @@
 /**
  * @file
  * addfullajax
- * Add FullAjax library to Drupal 7
+ * Add FullAJAX library to Drupal 7
  * @since 2011.05.19
  */
 
 /**
- * Define default configuration
+ * Define default configuration.
  */
 function _addfullajax_def_values($name) {
   $def = array(
@@ -62,7 +62,7 @@ end: function(id){
 function addfullajax_help($path, $arg) {
   switch ($path) {
     case 'admin/help#addfullajax':
-      return t('Help For FullAjax module.') . t('Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>');
+      return t('Help For FullAJAX module.') . t('Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>');
   }
 }
 /**
@@ -72,7 +72,7 @@ function addfullajax_permission() {
   return array(
     'administer addfullajax'  =>  array(
       'title'  =>  t('Administer the module'),
-      'description'  =>  t('Perform maintenance tasks for the Add FullAjax module.'),
+      'description'  =>  t('Perform maintenance tasks for the Add FullAJAX module.'),
     ),
   );
 }
@@ -83,8 +83,8 @@ function addfullajax_menu() {
   $items = array();
 
   $items['admin/config/development/addfullajax'] = array(
-    'title'  =>  'Add FullAjax',
-    'description'  =>  'Configuration for Add FullAjax module',
+    'title'  =>  'Add FullAJAX',
+    'description'  =>  'Configuration for Add FullAJAX module',
     'page callback'  =>  'drupal_get_form',
     'page arguments'  =>  array('addfullajax_admin_form'),
     'access arguments'  =>  array('administer addfullajax'),
@@ -118,7 +118,7 @@ function addfullajax_init() {
 }
 
 /**
- * check whether we allow use fullajax sripts
+ * Check whether we allow use fullajax sripts.
  * @return boolean
  */
 function _addfullajax_is_allow() {
@@ -139,7 +139,7 @@ function _addfullajax_is_allow() {
 }
 
 /**
- * Add JS Configuration for FullAjax
+ * Add JS Configuration for FullAJAX.
  */
 function _addfullajax_add_config_js() {
 
@@ -188,7 +188,7 @@ FLAX.Html.onall('load', function(o){
 
 }
 /**
- * Generate JavaScript for FullAJAX Model2Blocks
+ * Generate JavaScript for FullAJAX Model2Blocks.
  * @param array $markers - array with block ids
  */
 function _addfullajax_add_model2bloks($markers) {
@@ -200,8 +200,7 @@ function _addfullajax_add_model2bloks($markers) {
 }
 
 /**
-* Implements hook_theme().
-* add own theme
+* Implements hook_theme() for add own theme.
 */
 function addfullajax_theme() {
   return array(
@@ -213,16 +212,16 @@ function addfullajax_theme() {
   );
 }
 /**
- * preprocess for theme_addfullajax_page
- * need for apply all variables for page from preprocess_page
+ * Preprocess for theme_addfullajax_page
+ * need for apply all variables for page from preprocess_page.
  * @param array $variables
  */
 function template_preprocess_addfullajax_page(&$variables) {
   template_preprocess_page($variables);
 }
 /**
- * process for theme_addfullajax_page
- * add couple new variables: regions - regions that need render, not allowed was removed in addfullajax_page_alter
+ * Process for theme_addfullajax_page
+ * add couple new variables: regions - regions that need render, not allowed was removed in addfullajax_page_alter.
  * @param array $variables
  */
 function template_process_addfullajax_page(&$variables) {
@@ -237,8 +236,8 @@ function template_process_addfullajax_page(&$variables) {
 }
 
 /**
- * theme for render a page for fullajax answer
- * not used
+ * Theme for render a page for fullajax answer
+ * not used.
  * @see addfullajax-page.tpl.php file
  * @param array $variables
  */

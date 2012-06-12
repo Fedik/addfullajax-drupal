@@ -8,7 +8,7 @@
  */
 
 /**
- * clean up variables
+ * Clean up variables.
  */
 function addfullajax_uninstall() {
   global $conf;
