@@ -8,8 +8,7 @@
 
 /**
  * Form function, called by drupal_get_form()
- * @todo: ouh,crazy thing..
- */
+  */
 function addfullajax_admin_form($form, &$form_state) {
 
   $form['addfullajax_cssid'] = array(
@@ -22,6 +21,7 @@ function addfullajax_admin_form($form, &$form_state) {
       '#required'  =>  TRUE,
   );
 
+  //themes configuration
   $form['addfullajax_themes'] = array(
       '#type'  =>  'fieldset',
       '#title'  =>  t('Themes configs'),
@@ -73,6 +73,7 @@ function addfullajax_admin_form($form, &$form_state) {
       ),
   );
 
+  //base configuration
   $form['addfullajax_use_html5'] = array(
       '#type'  =>  'checkbox',
       '#title'  =>  t('HTML5 History API'),
@@ -116,8 +117,7 @@ function addfullajax_admin_form($form, &$form_state) {
       '#required'  =>  FALSE,
   );
 
-
-
+  //couple things for debug
   $form['addfullajax_debug'] = array(
       '#type'  =>  'checkboxes',
       '#title'  =>  t('For Debug'),

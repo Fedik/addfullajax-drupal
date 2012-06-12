@@ -62,7 +62,7 @@ end: function(id){
 function addfullajax_help($path, $arg) {
   switch ($path) {
     case 'admin/help#addfullajax':
-      return t('Help For FullAjax module.') . 'Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>';
+      return t('Help For FullAjax module.') . t('Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>');
   }
 }
 /**
@@ -187,7 +187,6 @@ FLAX.Html.onall('load', function(o){
 }
 /**
  * Generate JavaScript for FullAJAX Model2Blocks
- * @todo allow interaction with themes/modules here
  * @param array $markers - array with block ids
  */
 function _addfullajax_add_model2bloks($markers) {
@@ -277,7 +276,7 @@ function addfullajax_page_alter(&$page) {
   if ($_addfullajax_need_ajax_response) {
     //use own theme for answer
     $page['#theme'] = 'addfullajax_page';
-    //$page['#theme_wrappers'] = array('addfullajax_html');
+
     $page['#addfullajax_regions'] = array();
 
     //remove regions that no need render
