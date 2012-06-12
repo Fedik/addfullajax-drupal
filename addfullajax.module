@@ -89,7 +89,7 @@ function addfullajax_menu() {
     'page arguments'  =>  array('addfullajax_admin_form'),
     'access arguments'  =>  array('administer addfullajax'),
     'type'  =>  MENU_NORMAL_ITEM,
-    'file' => 'addfullajax.admin.inc'
+    'file' => 'addfullajax.admin.inc',
   );
   return $items;
 }
@@ -162,7 +162,9 @@ function _addfullajax_add_config_js() {
 FLAX.Html.onall('load', function(o){
  jQuery('ul .active').removeClass('active active-trail');
  jQuery('ul li a[href=\"'+o.url+'\"]').addClass('active active-trail').parent().addClass('active active-trail');
-});";}
+});";
+  }
+
   if (variable_get('addfullajax_useGA', 0)) {
     $js .= "\nFLAX.Html.onall('load', function(o){ _gaq.push(['_trackPageview', o.url]); });";
   }
