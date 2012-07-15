@@ -14,7 +14,9 @@
  */
 ?>
 <?php foreach ($regions as $region) : ?>
-  <?php if ($region == $main_region): // Render main content. ?>
+  <?php 
+  // Render main content.
+  if ($region == $main_region): ?>
     <!-- :ax:<?php print $content_id; ?>:begin: //-->
     <?php print render($title_prefix); ?>
     <?php if ($title): ?><h1 class="title" id="page-title"><?php print $title; ?></h1><?php endif; ?>
@@ -25,7 +27,9 @@
     <?php print render($variables['page'][$region]); ?>
     <?php print $feed_icons; ?>
     <!-- :ax:<?php print $content_id; ?>:end: //-->
-  <?php else : // Render additional blocks. ?>
+  <?php 
+  // Render additional blocks.
+  else : ?>
     <!-- :ax:flax-<?php print $region; ?>:begin: //-->
     <?php print render($variables['page'][$region]); ?>
     <!-- :ax:flax-<?php print $region; ?>:end: //-->
