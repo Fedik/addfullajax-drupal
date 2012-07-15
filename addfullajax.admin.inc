@@ -20,7 +20,7 @@ function addfullajax_admin_form($form, &$form_state) {
     '#required' => TRUE,
   );
 
-  // themes configuration
+  // Themes configuration.
   $form['addfullajax_themes'] = array(
     '#type' => 'fieldset',
     '#title' => t('Themes configs'),
@@ -72,7 +72,7 @@ function addfullajax_admin_form($form, &$form_state) {
     ),
   );
 
-  // base configuration
+  // Base configuration.
   $form['addfullajax_use_html5'] = array(
     '#type' => 'checkbox',
     '#title' => t('HTML5 History API'),
@@ -116,7 +116,7 @@ function addfullajax_admin_form($form, &$form_state) {
     '#required' => FALSE,
   );
 
-  // couple things for debug
+  // Couple things for debug.
   $form['addfullajax_debug'] = array(
     '#type' => 'checkboxes',
     '#title' => t('For Debug'),
