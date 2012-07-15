@@ -6,9 +6,9 @@
  * Available variables:
  *   all that for page.tpl.php
  *   +
- *   $regions = array that contain regions that need render 
- *(look at configuration)
- *   $main_region = string, region name that contain main contant 
+ *   $regions = array that contain regions that need render
+ * (look at configuration)
+ *   $main_region = string, region name that contain main contant
  * (look at configuration)
  *   $content_id = CSS id of main block content(look at configuration)
  */
