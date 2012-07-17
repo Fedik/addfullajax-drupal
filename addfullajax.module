@@ -62,7 +62,9 @@ end: function(id){
 function addfullajax_help($path, $arg) {
   switch ($path) {
     case 'admin/help#addfullajax':
-      return t('Help For FullAJAX module.') . t('Advanced on <a href="https://github.com/Fedik/FullAJAX" target="_blank">github.com/Fedik/FullAJAX</a>');
+      return t('Help For FullAJAX module.')
+      . '<br />'
+      . t('Advanced on <a href="@link" target="_blank">github.com/Fedik/FullAJAX</a>', array('@link' => 'https://github.com/Fedik/FullAJAX'));
   }
 }
 /**
@@ -247,6 +249,9 @@ function template_process_addfullajax_page(&$variables) {
  */
 function theme_addfullajax_page(&$variables) {
   $output = '';
+  $theme_default = variable_get('theme_default', 'bartik');
+  $main_region = variable_get('addfullajax_themes_' . $theme_default . '_main_region', 'content');
+
   //render regions
   foreach ($variables['regions'] as $region) {
     if ($region == $main_region) {
