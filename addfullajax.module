@@ -43,12 +43,12 @@ var addfullajaxGif = jQuery('<img/>',{
 FLAX.Effect.add({id:addFullAjaxId, start: function(id, request){
  var mId = jQuery('#'+addFullAjaxId);
  if (!jQuery('#addfullajaxGif').length){addfullajaxGif.insertBefore(mId);};
- mId.stop().animate({height:'30%',opacity:0},600,request());
+ mId.stop().animate({height:'30%',opacity:0},800,request());
 },
 end: function(id){
  var i = jQuery('#addfullajaxGif');
  if (i.length){i.remove();};
- jQuery('#'+addFullAjaxId).stop().animate({height:'+=0%',opacity: 1},300);
+ jQuery('#'+addFullAjaxId).stop().animate({height:'+=0%',opacity: 1},600);
 }
 });
 ",
