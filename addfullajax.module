@@ -105,14 +105,14 @@ function addfullajax_init() {
   //check whether we allow use fullajax sripts
   if (!_addfullajax_is_allow()) {
     $_addfullajax_need_ajax_response = FALSE;
-    return ;
+    return;
   }
 
   if ((isset($_SERVER['HTTP_AJAX_ENGINE']) && $_SERVER['HTTP_AJAX_ENGINE'] == 'Fullajax')
     || (isset($_REQUEST['ax']) && $_REQUEST['ax'] == 'ok' )
   ) {
     $_addfullajax_need_ajax_response = TRUE;
-    return ;
+    return;
   }
 
   _addfullajax_add_config_js();
@@ -186,19 +186,38 @@ FLAX.Html.onall('load', function(o){
     $js .= "\nFLAX.Default.DEBUG_STYLE=1;";
   }
 
-  drupal_add_js($js, array('type' => 'inline', 'weight' => 10));
+  // Put configuration in to the js file
+  // and store it in the default folder for a cached javascripts.
+  $jspath = 'public://js';
+  $uri = $jspath . '/fullajax-config.js';
+
+  if (!file_exists($uri)) {
+    // Create the JS file.
+    file_prepare_directory($jspath, FILE_CREATE_DIRECTORY);
+    file_unmanaged_save_data($js, $uri, FILE_EXISTS_REPLACE);
+  }
+
+  if (file_exists($uri)) {
+    drupal_add_js(str_replace('public:/', variable_get('file_public_path', 'sites/default/files'), $uri));
+  }
+  else {
+    // If still problem with make fullajax-config.js file
+    // then just add it inline
+    drupal_add_js($js, array('type' => 'inline'));
+  }
 
 }
 /**
  * Generate JavaScript for FullAJAX Model2Blocks.
  * @param
  *   $markers - array with block ids
+ * @todo put it in to the fullajax-config.js
  */
 function _addfullajax_add_model2bloks($markers) {
   $markers = array_unique($markers);
   if ($js = json_encode(array_combine($markers, $markers))) {
     $js =  'FLAX.Model2Blocks[addFullAjaxId] = ' . $js . ';';
-    drupal_add_js($js, array('type' => 'inline', 'weight' => 11));
+    drupal_add_js($js, array('type' => 'inline'));
   }
 }
 

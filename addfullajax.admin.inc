@@ -131,5 +131,15 @@ function addfullajax_admin_form($form, &$form_state) {
     '#prefix' => '<hr />',
   );
 
+  $form['#submit'][] = 'addfullajax_admin_form_submit';
+
   return system_settings_form($form);
+}
+
+function addfullajax_admin_form_submit($form, &$form_state) {
+  // Delete the old configuration file.
+  $uri = 'public://js/fullajax-config.js';
+  if (file_exists($uri)) {
+    drupal_unlink($uri);
+  }
 }
