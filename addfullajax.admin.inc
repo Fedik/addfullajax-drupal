@@ -66,7 +66,7 @@ function addfullajax_admin_form($form, &$form_state) {
     'addfullajax_themes_disabled' => array(
       '#type' => 'checkboxes',
       '#title' => t('Disable for themes'),
-      '#description' => t('Disable for theme. FullAJAX will not connect for these themes.'),
+      '#description' => t('Disable for a theme. FullAJAX will not connect for a selected themes.'),
       '#options' => $active_themes,
       '#default_value' => variable_get('addfullajax_themes_disabled', array('seven')),
     ),
@@ -75,26 +75,26 @@ function addfullajax_admin_form($form, &$form_state) {
   // Base configuration.
   $form['addfullajax_use_html5'] = array(
     '#type' => 'checkbox',
-    '#title' => t('HTML5 History API'),
-    '#description' => t('Enable using HTML5 History API'),
+    '#title' => t('Use HTML5 History API'),
+    '#description' => t('Enable the use of HTML5 History API in the browsers that support it'),
     '#default_value' => variable_get('addfullajax_use_html5', 1),
   );
   $form['addfullajax_checkmenuit'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Auto check active menu item'),
-    '#description' => t('Enable auto check the active menu item'),
+    '#title' => t('Check the active menu item'),
+    '#description' => t('Try auto detect the active menu item after each request, and add class "active active-trail"'),
     '#default_value' => variable_get('addfullajax_checkmenuit', 1),
   );
   $form['addfullajax_usr_cache'] = array(
     '#type' => 'checkbox',
-    '#title' => t('User-side Cache'),
-    '#description' => t('Enable Cache on user-side'),
+    '#title' => t('Use user-side caching'),
+    '#description' => t('Enable caching of the requests on the user side'),
     '#default_value' => variable_get('addfullajax_usr_cache', 1),
   );
   $form['addfullajax_useGA'] = array(
     '#type' => 'checkbox',
     '#title' => t('I use Google Analytics'),
-    '#description' => t('Check if you use Google Analytics'),
+    '#description' => t('Enable trick for Google Analytics for keep the statistics untill AHAH/AJAX requests. Check only if you use Google Analytics'),
     '#default_value' => variable_get('addfullajax_useGA', 0),
   );
   $form['addfullajax_data'] = array(
@@ -108,11 +108,11 @@ function addfullajax_admin_form($form, &$form_state) {
   );
   $form['addfullajax_animation'] = array(
     '#type' => 'textarea',
-    '#title' => t('Code for AJAX animation'),
+    '#title' => t('Animation during request'),
     '#default_value' => variable_get('addfullajax_animation', _addfullajax_def_values('conf_anim')),
     '#cols' => 10,
     '#rows' => 12,
-    '#description' => t('JavaScript code for AJAX animation'),
+    '#description' => t('JavaScript code for animation during request'),
     '#required' => FALSE,
   );
 
