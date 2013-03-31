@@ -12,7 +12,8 @@ Installation and configuration:
 - install libraries module
 - download FullAJAX library from https://github.com/Fedik/FullAJAX
 and put it in to /sites/all/libraries/fullajax/fullajax.js
-- install and enable Add FullAJAX module
+- download this module and install in to /sites/all/modules/addfullajax 
+(or depend of you drupal site configuration), and enable
 - go to module configuration and enter there the right CSS content id
 from you real template, and set position where displayed
 the main content, it important for right content rendering
